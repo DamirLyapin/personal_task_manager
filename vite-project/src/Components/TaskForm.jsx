@@ -1,0 +1,25 @@
+import { useState } from "react";
+
+function TaskForm({ onAddTask }) {
+    const [inputValue, setInputValue] = useState('')
+
+    const handleSubmit = (e) => {
+        e.preventDefault()
+        if (!inputValue.trim()) return
+
+        onAddTask(inputValue)
+        setInputValue('')
+    }
+
+    return (
+        <form onSubmit={handleSubmit}>
+            <input type="text" 
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                placeholder="Задачи на сегодня:"/>
+            <button type="submit">Добавить</button>
+        </form>
+    )
+}
+
+export default TaskForm
