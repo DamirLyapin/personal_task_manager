@@ -1,12 +1,12 @@
 import { useState } from 'react'
-import _ from 'lodash'
 
 import TaskForm from './Components/TaskForm'
 import TaskItem from './Components/TaskItem'
-
+import TaskEditing from './Components/TaskEditing'
 
 function App() {
   const [tasks, setTasks] = useState([{ id: 1, text: "Записать задачи на сегодня :)", completed: false }])
+  const [editingTaskId, setEditingTaskId] = useState(null)
   
   const handleAddTask = (text) => {
     const newTask = { id: crypto.randomUUID(), text, completed: false }
@@ -26,6 +26,18 @@ function App() {
     )
   }
 
+  const handltEditTasks = (id) => {
+    setEditingTaskId(id)
+  }
+
+  const handleSaveTasks = (id, text) => {
+    setTasks(prevTasks =>
+      prevTasks.map((task) => 
+      task.id === id ? { id, text, completed: task.completed } : task)
+    )
+    setEditingTaskId(null)
+  }
+
   return (
     <div className='container'>
       <h2>Список задач</h2>
@@ -34,7 +46,7 @@ function App() {
 
       <ul>
         {tasks.map((task) => 
-          <TaskItem task={task} key={task.id} onToggleTask={handleToggleTask} onDeleteTask={handleDeleteTasks} />
+          task.id === editingTaskId ? <TaskEditing key={task.id} onEditTask={handleSaveTasks} task={task}/> : <TaskItem task={task} key={task.id} onToggleTask={handleToggleTask} onDeleteTask={handleDeleteTasks} onEditingTask={handltEditTasks} />
         )}
       </ul>
     </div>
