@@ -1,40 +1,25 @@
 import { useState } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
 
 import TaskForm from './Components/TaskForm'
 import TaskItem from './Components/TaskItem'
 import TaskEditing from './Components/TaskEditing'
+import TaskHeader from './Components/TaskHeader'
+import { updateTask } from './features/tasks/taskSlice'
+import { selectVisibleTasks } from './features/tasks/tasksSelectors'
 
 function App() {
-  const [tasks, setTasks] = useState([{ id: 1, text: "Записать задачи на сегодня :)", completed: false }])
+
+  const visibleTasks = useSelector(selectVisibleTasks)
+  const dispatch = useDispatch()
   const [editingTaskId, setEditingTaskId] = useState(null)
   
-  const handleAddTask = (text) => {
-    const newTask = { id: crypto.randomUUID(), text, completed: false }
-    setTasks(prevTasks => [...prevTasks, newTask])
-  }
-
-  const handleToggleTask = (id) => {
-    setTasks(prevTasks =>
-      prevTasks.map((task) => 
-        task.id === id ? { ...task, completed: !task.completed } : task)
-    )
-  }
-
-  const handleDeleteTasks = (id) => {
-    setTasks(prevTasks => 
-      prevTasks.filter((task) => task.id !== id)
-    )
-  }
-
-  const handltEditTasks = (id) => {
+  const handleEditTask = (id) => {
     setEditingTaskId(id)
   }
 
   const handleSaveTasks = (id, text) => {
-    setTasks(prevTasks =>
-      prevTasks.map((task) => 
-      task.id === id ? { id, text, completed: task.completed } : task)
-    )
+    dispatch(updateTask({ text, id }))
     setEditingTaskId(null)
   }
 
@@ -42,11 +27,14 @@ function App() {
     <div className='container'>
       <h2>Список задач</h2>
 
-      <TaskForm onAddTask={handleAddTask} />
+      <TaskForm/>
+
+      <TaskHeader/>
 
       <ul>
-        {tasks.map((task) => 
-          task.id === editingTaskId ? <TaskEditing key={task.id} onEditTask={handleSaveTasks} task={task}/> : <TaskItem task={task} key={task.id} onToggleTask={handleToggleTask} onDeleteTask={handleDeleteTasks} onEditingTask={handltEditTasks} />
+        {visibleTasks.map((task) => 
+          task.id === editingTaskId ? <TaskEditing key={task.id} onEditTask={handleSaveTasks} task={task}/> : 
+            <TaskItem task={task} key={task.id} onEditingTask={handleEditTask} />
         )}
       </ul>
     </div>

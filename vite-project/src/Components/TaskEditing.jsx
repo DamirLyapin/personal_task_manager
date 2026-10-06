@@ -11,7 +11,7 @@ const TaskEditing = ({ onEditTask, task }) => {
 
     return (
         <li className="task-item-edit">
-            <form action="" onSubmit={handleSubmit}>
+            <form onSubmit={handleSubmit}>
                 <input type="text" value={text} onChange={(e) => setText(e.target.value)} />
                 <button type="submit">Подтвердить</button>
             </form>
